@@ -12,7 +12,7 @@
 
 using System;
 
-namespace RefactoringGuru.DesignPatterns.Bridge.Conceptual
+namespace Bridge.Conceptual
 {
     // The Abstraction defines the interface for the "control" part of the two
     // class hierarchies. It maintains a reference to an object of the
@@ -21,15 +21,15 @@ namespace RefactoringGuru.DesignPatterns.Bridge.Conceptual
     class Abstraction
     {
         protected IImplementation _implementation;
-		
+
         public Abstraction(IImplementation implementation)
         {
             this._implementation = implementation;
         }
-		
+
         public virtual string Operation()
         {
-            return "Abstract: Base operation with:\n" + 
+            return "Abstract: Base operation with:\n" +
                 _implementation.OperationImplementation();
         }
     }
@@ -40,8 +40,8 @@ namespace RefactoringGuru.DesignPatterns.Bridge.Conceptual
     {
         public ExtendedAbstraction(IImplementation implementation) : base(implementation)
         {
-		}
-		
+        }
+
         public override string Operation()
         {
             return "ExtendedAbstraction: Extended operation with:\n" +
@@ -88,10 +88,39 @@ namespace RefactoringGuru.DesignPatterns.Bridge.Conceptual
             Console.Write(abstraction.Operation());
         }
     }
-    
+
     class Program
     {
         static void Main(string[] args)
+        {
+            //    ConceptualExample();
+            RemoteControllerExample();
+        }
+
+        private static void RemoteControllerExample()
+        {
+            Tv tv = new Tv();
+            RemoteControl remote = new RemoteControl(tv);
+            remote.TogglePower();
+
+            Radio radio = new Radio();
+            AdvancedRemoteControl advancedRemote = new AdvancedRemoteControl(radio);
+
+        }
+
+        static void ThreeDimensionsExample()
+        {
+            // Drawing a red circle using OpenGL
+            Shape circle = new Circle(new Red());
+            IRenderingPlatform opengl = new OpenGL();
+            opengl.RenderShape(circle);
+
+            // Drawing a blue square using DirectX
+            Shape square = new Square(new Blue());
+            IRenderingPlatform directx = new DirectX();
+            directx.RenderShape(square);
+        }
+        private static void ConceptualExample()
         {
             Client client = new Client();
 
@@ -100,9 +129,9 @@ namespace RefactoringGuru.DesignPatterns.Bridge.Conceptual
             // abstraction-implementation combination.
             abstraction = new Abstraction(new ConcreteImplementationA());
             client.ClientCode(abstraction);
-            
+
             Console.WriteLine();
-            
+
             abstraction = new ExtendedAbstraction(new ConcreteImplementationB());
             client.ClientCode(abstraction);
         }

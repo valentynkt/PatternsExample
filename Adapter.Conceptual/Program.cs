@@ -45,6 +45,28 @@ namespace RefactoringGuru.DesignPatterns.Adapter.Conceptual
     {
         static void Main(string[] args)
         {
+            StockAppExample();
+            ConceptualExample();
+        }
+        static void StockAppExample()
+        {
+            // Create an instance of the analytics library
+            AnalyticsLibrary analyticsLibrary = new AnalyticsLibrary();
+
+            // Create an XML-to-JSON adapter for the analytics library
+            IAnalyticsLibrary adapter = new XmlToJsonAdapter(analyticsLibrary);
+
+            // Create a stock market app instance using the adapter
+            StockMarketApp stockMarketApp = new StockMarketApp(adapter);
+
+            // Simulate receiving market data in XML format
+            string xmlMarketData = "<marketData><symbol>ABC</symbol><price>100</price></marketData>";
+            // Process the market data using the stock market app
+            stockMarketApp.ProcessMarketData(xmlMarketData);
+        }
+
+        private static void ConceptualExample()
+        {
             Adaptee adaptee = new Adaptee();
             ITarget target = new Adapter(adaptee);
 

@@ -3,6 +3,7 @@
 // Intent: Lets you attach new behaviors to objects by placing these objects
 // inside special wrapper objects that contain the behaviors.
 
+using Decorator.Conceptual;
 using System;
 
 namespace RefactoringGuru.DesignPatterns.Composite.Conceptual
@@ -87,7 +88,7 @@ namespace RefactoringGuru.DesignPatterns.Composite.Conceptual
             return $"ConcreteDecoratorB({base.Operation()})";
         }
     }
-    
+
     public class Client
     {
         // The client code works with all objects using the Component interface.
@@ -98,10 +99,29 @@ namespace RefactoringGuru.DesignPatterns.Composite.Conceptual
             Console.WriteLine("RESULT: " + component.Operation());
         }
     }
-    
+
     class Program
     {
         static void Main(string[] args)
+        {
+            RealExample();
+            //      ConceptualExample();
+        }
+
+        private static void RealExample()
+        {
+            // Example usage
+            var app = new Application();
+            app.DumbUsageExample();
+
+            var configurator = new ApplicationConfigurator();
+            var dataSource = configurator.ConfigurationExample(enabledEncryption: true, enabledCompression: true);
+            var salaryManager = new SalaryManager(dataSource);
+            var salary = salaryManager.Load();
+            Console.WriteLine($"Loaded salary data: {salary}");
+        }
+
+        private static void ConceptualExample()
         {
             Client client = new Client();
 
