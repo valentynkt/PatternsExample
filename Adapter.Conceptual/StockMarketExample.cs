@@ -2,7 +2,7 @@
 
 using System;
 
-namespace RefactoringGuru.DesignPatterns.Adapter.Conceptual
+namespace Adapter.Conceptual
 {
 
     public interface IAnalyticsLibrary
@@ -23,9 +23,9 @@ namespace RefactoringGuru.DesignPatterns.Adapter.Conceptual
     // Adapter for converting XML data to JSON and interacting with the analytics library
     public class XmlToJsonAdapter : IAnalyticsLibrary
     {
-        private readonly AnalyticsLibrary _analyticsLibrary;
+        private readonly IAnalyticsLibrary _analyticsLibrary;
 
-        public XmlToJsonAdapter(AnalyticsLibrary analyticsLibrary)
+        public XmlToJsonAdapter(IAnalyticsLibrary analyticsLibrary)
         {
             _analyticsLibrary = analyticsLibrary;
         }
