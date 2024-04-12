@@ -5,95 +5,49 @@
 
 using System;
 
-namespace RefactoringGuru.DesignPatterns.State.Conceptual
+namespace State.Conceptual
 {
-    // The Context defines the interface of interest to clients. It also
-    // maintains a reference to an instance of a State subclass, which
-    // represents the current state of the Context.
-    class Context
-    {
-        // A reference to the current state of the Context.
-        private State _state = null;
-
-        public Context(State state)
-        {
-            this.TransitionTo(state);
-        }
-
-        // The Context allows changing the State object at runtime.
-        public void TransitionTo(State state)
-        {
-            Console.WriteLine($"Context: Transition to {state.GetType().Name}.");
-            this._state = state;
-            this._state.SetContext(this);
-        }
-
-        // The Context delegates part of its behavior to the current State
-        // object.
-        public void Request1()
-        {
-            this._state.Handle1();
-        }
-
-        public void Request2()
-        {
-            this._state.Handle2();
-        }
-    }
-    
-    // The base State class declares methods that all Concrete State should
-    // implement and also provides a backreference to the Context object,
-    // associated with the State. This backreference can be used by States to
-    // transition the Context to another State.
-    abstract class State
-    {
-        protected Context _context;
-
-        public void SetContext(Context context)
-        {
-            this._context = context;
-        }
-
-        public abstract void Handle1();
-
-        public abstract void Handle2();
-    }
-
-    // Concrete States implement various behaviors, associated with a state of
-    // the Context.
-    class ConcreteStateA : State
-    {
-        public override void Handle1()
-        {
-            Console.WriteLine("ConcreteStateA handles request1.");
-            Console.WriteLine("ConcreteStateA wants to change the state of the context.");
-            this._context.TransitionTo(new ConcreteStateB());
-        }
-
-        public override void Handle2()
-        {
-            Console.WriteLine("ConcreteStateA handles request2.");
-        }
-    }
-
-    class ConcreteStateB : State
-    {
-        public override void Handle1()
-        {
-            Console.Write("ConcreteStateB handles request1.");
-        }
-
-        public override void Handle2()
-        {
-            Console.WriteLine("ConcreteStateB handles request2.");
-            Console.WriteLine("ConcreteStateB wants to change the state of the context.");
-            this._context.TransitionTo(new ConcreteStateA());
-        }
-    }
-
     class Program
     {
         static void Main(string[] args)
+        {
+            RealExample();
+            ConceptualExample();
+        }
+
+        private static void RealExample()
+        {
+            var player = new AudioPlayer();
+
+            Console.WriteLine("Testing the Audio Player with State Pattern");
+
+            // Initially in ReadyState
+            Console.WriteLine("\nInitial State: Ready");
+            player.ClickPlay(); // Starts playback and transitions to PlayingState
+            Console.WriteLine("Clicked Play: Should be playing now");
+
+            // Now in PlayingState
+            Console.WriteLine("\nState: Playing");
+            player.ClickLock(); // Locks the player and transitions to LockedState
+            Console.WriteLine("Clicked Lock: Should be locked now");
+
+            // Now in LockedState
+            Console.WriteLine("\nState: Locked");
+            player.ClickPlay(); // No effect because the player is locked
+            Console.WriteLine("Clicked Play: No effect, player is locked");
+
+            player.ClickLock(); // Unlocks the player and returns to ReadyState
+            Console.WriteLine("Clicked Lock Again: Should be unlocked and ready now");
+
+            // Player back in ReadyState
+            Console.WriteLine("\nState: Ready");
+            player.ClickNext(); // Assumes going to the next track
+            Console.WriteLine("Clicked Next: Should prepare the next track");
+
+            Console.WriteLine("\nTesting complete.");
+        }
+
+        private static void ConceptualExample()
         {
             // The client code.
             var context = new Context(new ConcreteStateA());

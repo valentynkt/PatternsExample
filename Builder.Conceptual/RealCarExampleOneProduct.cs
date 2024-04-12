@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Builder.Conceptual
 {
+    // The 'Director' class
     public class Shop
     {
-        // Builder uses a complex series of steps
+        // Orchestrates the build steps
         public void Construct(VehicleBuilder vehicleBuilder)
         {
+            vehicleBuilder.Reset();
             vehicleBuilder.BuildFrame();
             vehicleBuilder.BuildEngine();
             vehicleBuilder.BuildWheels();
@@ -16,159 +16,141 @@ namespace Builder.Conceptual
         }
     }
 
-    /// <summary>
-    /// The 'Builder' abstract class
-    /// </summary>
+    // The 'Builder' abstract class
     public abstract class VehicleBuilder
     {
-        private Vehicle _vehicle;
-        // Gets vehicle instance
+        protected Vehicle vehicle;
 
+        // Resets the builder with a new vehicle instance
+        public virtual void Reset() { }
+
+        // Returns the built vehicle and resets the builder
         public Vehicle GetVehicle()
         {
-            var vehicle = this._vehicle;
-            this._vehicle = null;
-            return vehicle;
+            var result = vehicle;
+            Reset();
+            return result;
         }
+
         // Abstract build methods
         public abstract void BuildFrame();
         public abstract void BuildEngine();
         public abstract void BuildWheels();
         public abstract void BuildDoors();
-
-        public void ShowVehicleParts()
-        {
-            Console.WriteLine(_vehicle.Show());
-        }
     }
 
-    // <summary>
-    /// The 'ConcreteBuilder1' class
-    /// </summary>
-    class MotorCycleBuilder : VehicleBuilder
+    // 'ConcreteBuilder' for Motorcycles
+    public class MotorCycleBuilder : VehicleBuilder
     {
-        private Vehicle _vehicle;
-
-        public MotorCycleBuilder()
+        public override void Reset()
         {
-            Reset();
+            vehicle = new Vehicle("MotorCycle");
         }
+
         public override void BuildFrame()
         {
-            _vehicle["frame"] = "MotorCycle Frame";
+            vehicle["frame"] = "MotorCycle Frame";
         }
+
         public override void BuildEngine()
         {
-            _vehicle["engine"] = "500 cc";
+            vehicle["engine"] = "500 cc";
         }
+
         public override void BuildWheels()
         {
-            _vehicle["wheels"] = "2";
+            vehicle["wheels"] = "2";
         }
+
         public override void BuildDoors()
         {
-            _vehicle["doors"] = "0";
-        }
-        public void Reset()
-        {
-            this._vehicle = new Vehicle("MotorCycle"); ;
+            vehicle["doors"] = "0"; // Motorcycles don't have doors
         }
     }
 
-    /// <summary>
-    /// The 'ConcreteBuilder2' class
-    /// </summary>
-    class CarBuilder : VehicleBuilder
+    // 'ConcreteBuilder' for Cars
+    public class CarBuilder : VehicleBuilder
     {
-        private Vehicle _vehicle;
-        public CarBuilder()
+        public override void Reset()
         {
-            _vehicle = new Vehicle("Car");
+            vehicle = new Vehicle("Car");
         }
+
         public override void BuildFrame()
         {
-            _vehicle["frame"] = "Car Frame";
+            vehicle["frame"] = "Car Frame";
         }
+
         public override void BuildEngine()
         {
-            _vehicle["engine"] = "2500 cc";
+            vehicle["engine"] = "2500 cc";
         }
+
         public override void BuildWheels()
         {
-            _vehicle["wheels"] = "4";
+            vehicle["wheels"] = "4";
         }
+
         public override void BuildDoors()
         {
-            _vehicle["doors"] = "4";
-        }
-        public void Reset()
-        {
-            this._vehicle = new Vehicle("Car"); ;
-        }
-    }
-    /// <summary>
-    /// The 'ConcreteBuilder3' class
-    /// </summary>
-    class ScooterBuilder : VehicleBuilder
-    {
-        private Vehicle _vehicle;
-        public ScooterBuilder()
-        {
-            Reset();
-        }
-        public override void BuildFrame()
-        {
-            _vehicle["frame"] = "Scooter Frame";
-        }
-        public override void BuildEngine()
-        {
-            _vehicle["engine"] = "50 cc";
-        }
-        public override void BuildWheels()
-        {
-            _vehicle["wheels"] = "2";
-        }
-        public override void BuildDoors()
-        {
-            _vehicle["doors"] = "0";
-        }
-        public void Reset()
-        {
-            this._vehicle = new Vehicle("Scooter"); ;
+            vehicle["doors"] = "4";
         }
     }
 
-    /// <summary>
-    /// The 'Product' class
-    /// </summary>
+    // 'ConcreteBuilder' for Scooters
+    public class ScooterBuilder : VehicleBuilder
+    {
+        public override void Reset()
+        {
+            vehicle = new Vehicle("Scooter");
+        }
+
+        public override void BuildFrame()
+        {
+            vehicle["frame"] = "Scooter Frame";
+        }
+
+        public override void BuildEngine()
+        {
+            vehicle["engine"] = "50 cc";
+        }
+
+        public override void BuildWheels()
+        {
+            vehicle["wheels"] = "2";
+        }
+
+        public override void BuildDoors()
+        {
+            vehicle["doors"] = "0"; // Scooters don't have doors
+        }
+    }
+
+    // The 'Product' class
     public class Vehicle
     {
-        private readonly string _vehicleType;
-        private readonly Dictionary<string, string> _parts =
-          new Dictionary<string, string>();
-        // Constructor
+        private readonly string vehicleType;
+        private readonly Dictionary<string, string> parts = [];
+
         public Vehicle(string vehicleType)
         {
-            this._vehicleType = vehicleType;
+            this.vehicleType = vehicleType;
         }
 
-        // Indexer
         public string this[string key]
         {
-            get { return _parts[key]; }
-            set { _parts[key] = value; }
+            get => parts.ContainsKey(key) ? parts[key] : null;
+            set => parts[key] = value;
         }
 
         public string Show()
         {
-            var showString =
-                "\n--------------------------"
-                + $"\nVehicle Type: {_vehicleType}"
-                + $"\nFrame : {_parts["frame"]}"
-                + $"\nEngine : {_parts["engine"]}"
-                + $"\n#Wheels: {_parts["wheels"]}"
-                + $"\n#Doors : {_parts["doors"]}";
-            return showString;
+            return $"\n--------------------------\n" +
+                   $"Vehicle Type: {vehicleType}\n" +
+                   $"Frame: {this["frame"]}\n" +
+                   $"Engine: {this["engine"]}\n" +
+                   $"#Wheels: {this["wheels"]}\n" +
+                   $"#Doors: {this["doors"]}";
         }
     }
 }
