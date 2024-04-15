@@ -3,65 +3,77 @@
 // Intent: Lets you ensure that a class has only one instance, while providing a
 // global access point to this instance.
 
-using System;
-
-namespace Singleton.Conceptual.NonThreadSafe
+namespace Singleton.Conceptual
 {
-    // The Singleton class defines the `GetInstance` method that serves as an
-    // alternative to constructor and lets clients access the same instance of
-    // this class over and over.
+    using System;
 
-    // EN : The Singleton should always be a 'sealed' class to prevent class
-    // inheritance through external classes and also through nested classes.
-    public sealed class Singleton
+    class Singleton
     {
-        // The Singleton's constructor should always be private to prevent
-        // direct construction calls with the `new` operator.
+        private static Singleton nonThreadSafeInstance;
+        private static Singleton threadSafeInstance;
+        private static readonly object lockObject = new object();
+
+        // Private constructor to prevent external instantiation.
         private Singleton() { }
 
-        // The Singleton's instance is stored in a static field. There there are
-        // multiple ways to initialize this field, all of them have various pros
-        // and cons. In this example we'll show the simplest of these ways,
-        // which, however, doesn't work really well in multithreaded program.
-        private static Singleton _instance;
-
-        // This is the static method that controls the access to the singleton
-        // instance. On the first run, it creates a singleton object and places
-        // it into the static field. On subsequent runs, it returns the client
-        // existing object stored in the static field.
-        public static Singleton GetInstance()
+        // Non-thread-safe Singleton accessor
+        public static Singleton GetNonThreadSafeInstance(string value)
         {
-            if (_instance == null)
+            if (nonThreadSafeInstance == null)
             {
-                _instance = new Singleton();
+                nonThreadSafeInstance = new Singleton { Value = value };
             }
-            return _instance;
+            return nonThreadSafeInstance;
         }
 
-        // Finally, any singleton should define some business logic, which can
-        // be executed on its instance.
-        public void someBusinessLogic()
+        // Thread-safe Singleton accessor using double-check locking
+        public static Singleton GetThreadSafeInstance(string value)
         {
-            // ...
+            if (threadSafeInstance == null)
+            {
+                lock (lockObject)
+                {
+                    if (threadSafeInstance == null)
+                    {
+                        threadSafeInstance = new Singleton { Value = value };
+                    }
+                }
+            }
+            return threadSafeInstance;
         }
+
+        // Property to store value
+        public string Value { get; set; }
     }
 
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            // The client code.
-            Singleton s1 = Singleton.GetInstance();
-            Singleton s2 = Singleton.GetInstance();
+            TestNonThreadSafeSingleton();
+            TestThreadSafeSingleton();
+        }
 
-            if (s1 == s2)
-            {
-                Console.WriteLine("Singleton works, both variables contain the same instance.");
-            }
-            else
-            {
-                Console.WriteLine("Singleton failed, variables contain different instances.");
-            }
+        static void TestNonThreadSafeSingleton()
+        {
+            // Demonstrate non-thread-safe Singleton
+            var singletonA = Singleton.GetNonThreadSafeInstance("Initial Value");
+            Console.WriteLine("Non-Thread-Safe Singleton Value: " + singletonA.Value);
+
+            // Attempting to change the instance value
+            var singletonB = Singleton.GetNonThreadSafeInstance("New Value");
+            Console.WriteLine("Non-Thread-Safe Singleton Value: " + singletonB.Value);
+        }
+
+        static void TestThreadSafeSingleton()
+        {
+            // Demonstrate thread-safe Singleton
+            var singletonC = Singleton.GetThreadSafeInstance("Initial Value");
+            Console.WriteLine("Thread-Safe Singleton Value: " + singletonC.Value);
+
+            // Attempting to change the instance value
+            var singletonD = Singleton.GetThreadSafeInstance("New Value");
+            Console.WriteLine("Thread-Safe Singleton Value: " + singletonD.Value);
         }
     }
 }

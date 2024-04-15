@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace AbstractFactory.Conceptual
 {
@@ -46,8 +44,8 @@ namespace AbstractFactory.Conceptual
 
     public interface IGUIFactory
     {
-         IButton CreateButton();
-         ICheckBox CreateCheckBox();
+        IButton CreateButton();
+        ICheckBox CreateCheckBox();
     }
 
     public class WinFactory : IGUIFactory
@@ -82,21 +80,12 @@ namespace AbstractFactory.Conceptual
 
         public SomeService(string configOS)
         {
-            switch (configOS)
+            _factory = configOS switch
             {
-                case "Windows":
-                    _factory = new WinFactory();
-                    break;
-                case "Mac":
-                    _factory = new MacFactory();
-                    break;
-                default:
-                    _factory = new WinFactory();
-                    //!!! Important
-                    //to implement correct default behaviour we should have default implementation in our Abstract Factory (IGUIFactory) and default behaviour in our elements (IButton, ICheckbox)
-                    //for this default implementation we should better use abstract class instead of interface
-                    break;
-            }
+                "Windows" => new WinFactory(),
+                "Mac" => new MacFactory(),
+                _ => new WinFactory(),
+            };
             _button = _factory.CreateButton();
             _checkBox = _factory.CreateCheckBox();
         }
