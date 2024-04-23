@@ -3,68 +3,53 @@ using System.Collections.Generic;
 
 namespace Visitor.Conceptual.ConceptualExample
 {
-    // The Component interface declares an `accept` method that should take the
-    // base visitor interface as an argument.
+    // The Component interface includes an `accept` method that takes a visitor as an argument.
     public interface IComponent
     {
         void Accept(IVisitor visitor);
     }
 
-    // Each Concrete Component must implement the `Accept` method in such a way
-    // that it calls the visitor's method corresponding to the component's
-    // class.
+    // Concrete Component A implements the `Accept` method to trigger the visitor's corresponding method.
     public class ConcreteComponentA : IComponent
     {
-        // Note that we're calling `VisitConcreteComponentA`, which matches the
-        // current class name. This way we let the visitor know the class of the
-        // component it works with.
+        // Calls `VisitConcreteComponentA` to let the visitor know it's working with Component A.
         public void Accept(IVisitor visitor)
         {
             visitor.VisitConcreteComponentA(this);
         }
 
-        // Concrete Components may have special methods that don't exist in
-        // their base class or interface. The Visitor is still able to use these
-        // methods since it's aware of the component's concrete class.
+        // Specific method only available in this component.
         public string ExclusiveMethodOfConcreteComponentA()
         {
             return "A";
         }
     }
 
+    // Concrete Component B works similarly to Component A.
     public class ConcreteComponentB : IComponent
     {
-        // Same here: VisitConcreteComponentB => ConcreteComponentB
+        // Calls `VisitConcreteComponentB` to let the visitor know it's working with Component B.
         public void Accept(IVisitor visitor)
         {
             visitor.VisitConcreteComponentB(this);
         }
 
+        // Specific method only available in this component.
         public string SpecialMethodOfConcreteComponentB()
         {
             return "B";
         }
     }
 
-    // The Visitor Interface declares a set of visiting methods that correspond
-    // to component classes. The signature of a visiting method allows the
-    // visitor to identify the exact class of the component that it's dealing
-    // with.
+    // The Visitor interface declares methods to handle visits to different component types.
     public interface IVisitor
     {
         void VisitConcreteComponentA(ConcreteComponentA element);
-
         void VisitConcreteComponentB(ConcreteComponentB element);
     }
 
-    // Concrete Visitors implement several versions of the same algorithm, which
-    // can work with all concrete component classes.
-    //
-    // You can experience the biggest benefit of the Visitor pattern when using
-    // it with a complex object structure, such as a Composite tree. In this
-    // case, it might be helpful to store some intermediate state of the
-    // algorithm while executing visitor's methods over various objects of the
-    // structure.
+    // Concrete Visitors define operations that can be performed on all component classes.
+    // These operations can take advantage of component-specific methods.
     class ConcreteVisitor1 : IVisitor
     {
         public void VisitConcreteComponentA(ConcreteComponentA element)
@@ -91,11 +76,9 @@ namespace Visitor.Conceptual.ConceptualExample
         }
     }
 
+    // Client code uses the visitor to operate on a collection of components without knowing their concrete classes.
     public class Client
     {
-        // The client code can run visitor operations over any set of elements
-        // without figuring out their concrete classes. The accept operation
-        // directs a call to the appropriate operation in the visitor object.
         public static void ClientCode(List<IComponent> components, IVisitor visitor)
         {
             foreach (var component in components)

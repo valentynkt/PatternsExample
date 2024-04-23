@@ -3,13 +3,8 @@ using System.Collections.Generic;
 
 namespace Flyweight.Conceptual
 {
-    // The flyweight class contains a portion of the state of a tree.
-    // These fields store values that are unique for each particular tree.
-    // For instance, you won't find here the tree coordinates. But the texture
-    // and colors shared between many trees are here. Since this data is usually
-    // BIG, you'd waste a lot of memory by keeping it in each tree object.
-    // Instead, we can extract texture, color, and other repeating data into a
-    // separate object which lots of individual tree objects can reference.
+    // Represents a portion of the state shared among multiple tree objects.
+    // Stores data like color and texture to avoid duplication in individual tree objects.
     class TreeType
     {
         private readonly string name;
@@ -23,16 +18,14 @@ namespace Flyweight.Conceptual
             this.texture = texture;
         }
 
+        // Draws the tree type at specified coordinates.
         public void Draw(int x, int y)
         {
-            // Create a bitmap of a given type, color & texture.
-            // Draw the bitmap on the canvas at X and Y coords.
             Console.WriteLine($"Drawing tree type: {name}, Color: {color}, Texture: {texture} at ({x}, {y})");
         }
     }
 
-    // Flyweight factory decides whether to re-use existing
-    // flyweight or to create a new object.
+    // Decides whether to reuse existing flyweight or create a new one.
     class TreeFactory
     {
         private static readonly Dictionary<string, TreeType> treeTypes = [];
@@ -48,9 +41,7 @@ namespace Flyweight.Conceptual
         }
     }
 
-    // The contextual object contains the extrinsic part of the tree state.
-    // An application can create billions of these since they are pretty small:
-    // just two integer coordinates and one reference field.
+    // Contains the extrinsic part of the tree state.
     class Tree
     {
         private readonly int x, y;
@@ -63,18 +54,19 @@ namespace Flyweight.Conceptual
             this.type = type;
         }
 
+        // Draws the tree using its type's attributes at its position.
         public void Draw()
         {
             type.Draw(x, y);
         }
     }
 
-    // The Tree and the Forest classes are the flyweight's clients.
-    // You can merge them if you don't plan to develop the Tree class any further.
+    // Represents a collection of trees, managing their creation and drawing.
     class Forest
     {
         private readonly List<Tree> trees = [];
 
+        // Plants a tree at the specified position with the given attributes.
         public void PlantTree(int x, int y, string name, string color, string texture)
         {
             TreeType type = TreeFactory.GetTreeType(name, color, texture);
@@ -82,6 +74,7 @@ namespace Flyweight.Conceptual
             trees.Add(tree);
         }
 
+        // Draws all trees in the forest.
         public void Draw()
         {
             foreach (var tree in trees)
@@ -90,4 +83,5 @@ namespace Flyweight.Conceptual
             }
         }
     }
+
 }
