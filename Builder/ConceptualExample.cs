@@ -113,7 +113,8 @@ namespace Builder.Conceptual
         {
             set => _builder = value;
         }
-
+        // generate function
+        
         // The Director can construct several product variations using the same
         // building steps.
         public void BuildMinimalViableProduct()
